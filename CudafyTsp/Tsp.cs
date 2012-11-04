@@ -1,4 +1,13 @@
-﻿using System;
+﻿#region License - Microsoft Public License - from PG Software Solutions Inc.
+/***********************************************************************************
+ * This software is copyright © 2012 by PG Software Solutions Inc. and licensed under
+ * the Microsoft Public License (http://cudafytuningtutorial.codeplex.com/license).
+ * 
+ * Author:			Pieter Geerkens
+ * Organization:	PG Software Solutions Inc.
+ * *********************************************************************************/
+#endregion
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,7 +15,7 @@ using Cudafy;
 using Cudafy.Host;
 using Cudafy.Translator;
 
-namespace CudafyTsp {
+namespace CudafyTuningTsp {
    public class Tsp : AbstractTsp {
 		static Tsp() {
 			AbstractTsp.BuildCityData( (city, @lat, @long) => {
@@ -14,38 +23,6 @@ namespace CudafyTsp {
 				_longitudes[city]	= @long;	}
 			);
 		}
-      public static void FindRoute(string cities) {
-			if (BaseTsp.NumCities < 13) {
-				var gpuTsp1 = new GpuTsp1_SeparateClass();
-				Console.WriteLine("GpuTsp1 " + gpuTsp1.GetAnswer() + " - " + gpuTsp1.Name);
-
-				var gpuTsp2 = new GpuTsp2_StructArray();
-				Console.WriteLine("GpuTsp2 " + gpuTsp2.GetAnswer() + " - " + gpuTsp2.Name);
-				Console.WriteLine("");
-			
-				var gpuTsp3 = new GpuTsp3_Architecture_x64_2_1();
-				Console.WriteLine("GpuTsp3 " + gpuTsp3.GetAnswer() + " - " + gpuTsp3.Name);
-				var gpuTsp3a = new GpuTsp3_PathArrayStrided();
-				Console.WriteLine("GpuTsp3a" + gpuTsp3a.GetAnswer() + " - " + gpuTsp3a.Name);
-				var gpuTsp3b = new GpuTsp3_DivisorsCachedGlobal();
-				Console.WriteLine("GpuTsp3b" + gpuTsp3b.GetAnswer() + " - " + gpuTsp3b.Name);
-				Console.WriteLine("");
-
-				var gpuTsp4 = new GpuTsp4_Long();
-				Console.WriteLine("GpuTsp4 " + gpuTsp4.GetAnswer() + " - " + gpuTsp4.Name);
-				var gpuTsp4a = new GpuTsp4_PathArrayStrided();
-				Console.WriteLine("GpuTsp4a" + gpuTsp4a.GetAnswer() + " - " + gpuTsp4a.Name);
-				var gpuTsp4b = new GpuTsp4_DivisorsCachedGlobal();
-				Console.WriteLine("GpuTsp4b" + gpuTsp4b.GetAnswer() + " - " + gpuTsp4b.Name);
-				Console.WriteLine("");
-			
-				var gpuTsp3c = new GpuTsp3_MultiplyInstead();
-				Console.WriteLine("GpuTsp3c" + gpuTsp3c.GetAnswer() + " - " + gpuTsp3c.Name);
-			}
-			var gpuTsp4c = new GpuTsp4_MultiplyInstead();
-			Console.WriteLine("GpuTsp4c" + gpuTsp4c.GetAnswer() + " - " + gpuTsp4c.Name);
-			Console.WriteLine("");
-      }
 		internal override Answer GetAnswer() { throw new NotImplementedException(); }
 
 		public static new long LoadTime { get; protected set; }

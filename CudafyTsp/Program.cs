@@ -1,4 +1,13 @@
-﻿using System;
+﻿#region License - Microsoft Public License - from PG Software Solutions Inc.
+/***********************************************************************************
+ * This software is copyright © 2012 by PG Software Solutions Inc. and licensed under
+ * the Microsoft Public License (http://cudafytuningtutorial.codeplex.com/license).
+ * 
+ * Author:			Pieter Geerkens
+ * Organization:	PG Software Solutions Inc.
+ * *********************************************************************************/
+#endregion
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,7 +16,7 @@ using Cudafy;
 using Cudafy.Host;
 using Cudafy.Translator;
 
-namespace CudafyTsp
+namespace CudafyTuningTsp
 {
    internal partial class Program {
       private static void Main() {
@@ -65,19 +74,51 @@ Cities {0,3};   Permutations: {1,10:D}:
 
 			Console.WriteLine("           Total     Load      Run            ");
 			Console.WriteLine("              ms       ms       ms            distance");
-			Tsp.FindRoute(Cities.List);
+			FindRoute(Cities.List);
 
 			if (BaseTsp.NumCities < 13) {
 				Console.WriteLine("... and now with disk cache populated.");
 				Console.WriteLine("           Total     Load      Run            ");
 				Console.WriteLine("              ms       ms       ms            distance");
-				Tsp.FindRoute(Cities.List);
+				FindRoute(Cities.List);
 			}
 
          Console.WriteLine("Done ... Press Enter to shutdown.");
 			try { Console.Read(); } catch (InvalidOperationException) { ; }
 			CudafyHost.GetDevice().FreeAll();
 			CudafyHost.GetDevice().HostFreeAll();
+      }
+      public static void FindRoute(string cities) {
+			if (BaseTsp.NumCities < 13) {
+				var gpuTsp1 = new GpuTsp1_SeparateClass();
+				Console.WriteLine("GpuTsp1 " + gpuTsp1.GetAnswer() + " - " + gpuTsp1.Name);
+
+				var gpuTsp2 = new GpuTsp2_StructArray();
+				Console.WriteLine("GpuTsp2 " + gpuTsp2.GetAnswer() + " - " + gpuTsp2.Name);
+				Console.WriteLine("");
+			
+				var gpuTsp3 = new GpuTsp3_Architecture_x64_2_1();
+				Console.WriteLine("GpuTsp3 " + gpuTsp3.GetAnswer() + " - " + gpuTsp3.Name);
+				var gpuTsp3a = new GpuTsp3_PathArrayStrided();
+				Console.WriteLine("GpuTsp3a" + gpuTsp3a.GetAnswer() + " - " + gpuTsp3a.Name);
+				var gpuTsp3b = new GpuTsp3_DivisorsCachedGlobal();
+				Console.WriteLine("GpuTsp3b" + gpuTsp3b.GetAnswer() + " - " + gpuTsp3b.Name);
+				Console.WriteLine("");
+
+				var gpuTsp4 = new GpuTsp4_Long();
+				Console.WriteLine("GpuTsp4 " + gpuTsp4.GetAnswer() + " - " + gpuTsp4.Name);
+				var gpuTsp4a = new GpuTsp4_PathArrayStrided();
+				Console.WriteLine("GpuTsp4a" + gpuTsp4a.GetAnswer() + " - " + gpuTsp4a.Name);
+				var gpuTsp4b = new GpuTsp4_DivisorsCachedGlobal();
+				Console.WriteLine("GpuTsp4b" + gpuTsp4b.GetAnswer() + " - " + gpuTsp4b.Name);
+				Console.WriteLine("");
+			
+				var gpuTsp3c = new GpuTsp3_MultiplyInstead();
+				Console.WriteLine("GpuTsp3c" + gpuTsp3c.GetAnswer() + " - " + gpuTsp3c.Name);
+			}
+			var gpuTsp4c = new GpuTsp4_MultiplyInstead();
+			Console.WriteLine("GpuTsp4c" + gpuTsp4c.GetAnswer() + " - " + gpuTsp4c.Name);
+			Console.WriteLine("");
       }
    }
 
@@ -139,18 +180,21 @@ Cities {0,3};   Permutations: {1,10:D}:
    }
 
 	internal class AnswerBetter : Answer {
+		/// <summary>Amended algorithm after SpaceRat (see Remarks): 
+		/// Don't <b>Divide</b> when you can <b>Multiply</b>!</summary>
+		/// <seealso cref="http://www.daniweb.com/software-development/cpp/code/274075/all-permutations-non-recursive"/> 
+		/// <remarks>Final loop iteration unneeded, as element [0] only swaps with itself.</remarks>
 		protected override int[] RoutePermutation() {
 			int cities = Tsp.NumCities;
 			int[] path = new int[cities];
 			for (var city = 0; city < cities; city++) { path[city] = city; }
 
-			// Credit: SpaceRat. 
-			// http://www.daniweb.com/software-development/cpp/code/274075/all-permutations-non-recursive
 			var divisor = 1L;
-			for (int city = cities; city > 1; ) {
+			for (int city = cities; city > 1; /* decrement in loop boody*/) {
 				var dest		= (int) ((Permutation / divisor) % city);
 				divisor		*= city;
-				city--;
+
+			city--;
 
 				var swap		= path[dest];
 				path[dest]	= path[city];

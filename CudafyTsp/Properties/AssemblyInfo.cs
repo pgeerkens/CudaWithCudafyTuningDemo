@@ -1,15 +1,24 @@
-﻿using System.Reflection;
+﻿#region License - Microsoft Public License - from PG Software Solutions Inc.
+/***********************************************************************************
+ * This software is copyright © 2012 by PG Software Solutions Inc. and licensed under
+ * the Microsoft Public License (http://cudafytuningtutorial.codeplex.com/license).
+ * 
+ * Author:			Pieter Geerkens
+ * Organization:	PG Software Solutions Inc.
+ * *********************************************************************************/
+#endregion
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CudafyTsp")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("CudafyTuningTsp")]
+[assembly: AssemblyDescription("Tuning tips for CUDA applications using CUDAfy.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("PG Software Solutions Inc.")]
-[assembly: AssemblyProduct("CudafyTsp")]
+[assembly: AssemblyProduct("CudafyTuningTsp")]
 [assembly: AssemblyCopyright("Copyright © PG Software Solutions Inc. 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -32,5 +41,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyFileVersion("1.0.*")]

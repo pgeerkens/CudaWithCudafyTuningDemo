@@ -8,7 +8,7 @@
     <ProjectGuid>{A39811A9-0F53-422F-823E-35527AD42FFA}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CudafyTsp</RootNamespace>
+    <RootNamespace>CudafyTuningTsp</RootNamespace>
     <AssemblyName>CudafyTsp</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
@@ -78,7 +78,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>CudafyTsp.Program</StartupObject>
+    <StartupObject>CudafyTuningTsp.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Cudafy, Version=1.10.4686.25315, Culture=neutral, processorArchitecture=MSIL">

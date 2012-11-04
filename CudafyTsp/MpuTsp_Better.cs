@@ -1,4 +1,13 @@
-﻿using System;
+﻿#region License - Microsoft Public License - from PG Software Solutions Inc.
+/***********************************************************************************
+ * This software is copyright © 2012 by PG Software Solutions Inc. and licensed under
+ * the Microsoft Public License (http://cudafytuningtutorial.codeplex.com/license).
+ * 
+ * Author:			Pieter Geerkens
+ * Organization:	PG Software Solutions Inc.
+ * *********************************************************************************/
+#endregion
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +16,7 @@ using Cudafy;
 using Cudafy.Host;
 using Cudafy.Translator;
 
-namespace CudafyTsp {
+namespace CudafyTuningTsp {
 	public class MpuTsp_Better : AbstractTspCPU {
 		static MpuTsp_Better() {
 			AbstractTsp.BuildCityData( (city, @lat, @long) => {
@@ -43,33 +52,8 @@ namespace CudafyTsp {
          var bestDistance		= float.MaxValue;
          var bestPermutation	= -1L;
          var locker				= new Object();
-#if fred
-			var rangePartitioner = Partitioner.Create(0,(int)_permutations);
-			
-         Parallel.ForEach(rangePartitioner, 
-				() => new LocalData(float.MaxValue, -1L),
-				(range, state, localData) => {
-					for (int permutation=range.Item1; permutation < range.Item2; permutation++) {
-						var path			= new int[1, _cities];
-						var distance	= FindPathDistance( permutation, path, 0);
-						if (distance < localData.BestDistance) {
-							localData.BestDistance		= distance;
-							localData.BestPermutation	= permutation;
-						}
-					}
-					return localData;
-				},
-				(localData) => {
-					lock (locker) { 
-						if (localData.BestDistance < bestDistance) {
-							bestDistance		= localData.BestDistance;
-							bestPermutation	= localData.BestPermutation;
-						}
-					}
-				}
-			);
-#else
-         Parallel.For(0, _permutations, 
+
+			Parallel.For(0, _permutations, 
 				() => new LocalData(float.MaxValue, -1L),
 				(permutation, state, localData) => {
 					var path			= new int[1, _cities];
@@ -89,8 +73,8 @@ namespace CudafyTsp {
 					}
 				}
 			);
-#endif
-         return new Answer { 
+
+			return new Answer { 
 				Distance		= bestDistance, 
 				Permutation	= bestPermutation,
 				msLoadTime	= LoadTime, 

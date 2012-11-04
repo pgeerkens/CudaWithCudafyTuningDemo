@@ -1,4 +1,13 @@
-﻿using System;
+﻿#region License - Microsoft Public License - from PG Software Solutions Inc.
+/***********************************************************************************
+ * This software is copyright © 2012 by PG Software Solutions Inc. and licensed under
+ * the Microsoft Public License (http://cudafytuningtutorial.codeplex.com/license).
+ * 
+ * Author:			Pieter Geerkens
+ * Organization:	PG Software Solutions Inc.
+ * *********************************************************************************/
+#endregion
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,20 +15,21 @@ using Cudafy;
 using Cudafy.Host;
 using Cudafy.Translator;
 
-namespace CudafyTsp {
+namespace CudafyTuningTsp {
 	public abstract class BaseTsp {
+      protected const int _cities				= 11;	// Set this to control sample size
+      protected const int _threadsPerBlock	= 32 /*threads/warp*/ * 4 /*warps/block*/;
+      protected const int _blocksPerGrid		=  6 /*blocks / gpu*/ * 2 /* gpus*/ 
+															* 8*4*2 /*parallelization*/; 
 		// Count permutations
 		static BaseTsp() { for (int i = 2; i <= _cities; i++) { _permutations *= i; } }
 
-		public static int  NumCities			{ get { return _cities; } }
-		public static int ThreadsPerBlock	{ get { return _threadsPerBlock; } }
-		public static int BlocksPerGrid		{ get { return _blocksPerGrid; } }
-		public static long Permutations		{ get { return _permutations; } }
-
-      protected const int _cities				= 13;
-      protected const int _threadsPerBlock	= 32 /*threads/warp*/ * 4 /*warps/block*/;
-      protected const int _blocksPerGrid		=  6 /*blocks / gpu*/ * 2 /* gpus*/ * 8*4*2 /*parallelization*/; 
       protected static readonly long _permutations	= 1;
+
+		public static int		NumCities			{ get { return _cities; } }
+		public static int		ThreadsPerBlock	{ get { return _threadsPerBlock; } }
+		public static int		BlocksPerGrid		{ get { return _blocksPerGrid; } }
+		public static long	Permutations		{ get { return _permutations; } }
 
 		public long LoadTime	{ get; protected set; }
 		public string Name	{ get { return GetType().Name.Replace("GpuTsp",string.Empty); } }
@@ -57,7 +67,6 @@ namespace CudafyTsp {
 		}
 	}
 	public abstract class AbstractTspCPU : AbstractTsp {
-		#region Cudafy
 		[Cudafy]
       public static float FindPathDistance(long permutations, long permutation, int cities, 
 			float[] latitudes, float[] longitudes, int[,] paths, int pathIndex) {
@@ -103,6 +112,5 @@ namespace CudafyTsp {
 
          return 0;
 		}
-		#endregion
 	}
 }

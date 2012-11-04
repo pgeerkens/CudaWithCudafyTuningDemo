@@ -1,4 +1,13 @@
-﻿using System;
+﻿#region License - Microsoft Public License - from PG Software Solutions Inc.
+/***********************************************************************************
+ * This software is copyright © 2012 by PG Software Solutions Inc. and licensed under
+ * the Microsoft Public License (http://cudafytuningtutorial.codeplex.com/license).
+ * 
+ * Author:			Pieter Geerkens
+ * Organization:	PG Software Solutions Inc.
+ * *********************************************************************************/
+#endregion
+using System;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
@@ -8,7 +17,7 @@ using Cudafy;
 using Cudafy.Host;
 using Cudafy.Translator;
 
-namespace CudafyTsp {
+namespace CudafyTuningTsp {
    public static class GPGPUExtensions {
 		#region  1 through  5
 		public static void SafeLaunch<T1>(this GPGPU @this, dim3 gridSize, dim3 blockSize, 

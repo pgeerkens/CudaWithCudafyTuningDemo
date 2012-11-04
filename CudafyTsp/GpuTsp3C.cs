@@ -1,11 +1,20 @@
-﻿using System;
+﻿#region License - Microsoft Public License - from PG Software Solutions Inc.
+/***********************************************************************************
+ * This software is copyright © 2012 by PG Software Solutions Inc. and licensed under
+ * the Microsoft Public License (http://cudafytuningtutorial.codeplex.com/license).
+ * 
+ * Author:			Pieter Geerkens
+ * Organization:	PG Software Solutions Inc.
+ * *********************************************************************************/
+#endregion
+using System;
 using System.Diagnostics;
 using System.Linq;
 using Cudafy;
 using Cudafy.Host;
 using Cudafy.Translator;
 
-namespace CudafyTsp {
+namespace CudafyTuningTsp {
 	public class GpuTsp3_MultiplyInstead: AbstractTsp {
 		public static readonly LatLongStruct[] _latLong	= new LatLongStruct[_cities];
 		static GpuTsp3_MultiplyInstead() {
@@ -129,13 +138,16 @@ namespace CudafyTsp {
          return distance;
       }
 
+		/// <summary>Amended algorithm after SpaceRat (see Remarks): 
+		/// Don't <b>Divide</b> when you can <b>Multiply</b>!</summary>
+		/// <seealso cref="http://www.daniweb.com/software-development/cpp/code/274075/all-permutations-non-recursive"/> 
+		/// <remarks>Final loop iteration unneeded, as element [0] only swaps with itself.</remarks>
       [Cudafy]
       public static float PathFromRoutePermutation(GThread thread, 
 				int  permutation, int[,] path) {
          for (int city = 0; city < _cities; city++) { path[city, thread.threadIdx.x] = city; }
 
-			// Credit: SpaceRat. 
-			// http://www.daniweb.com/software-development/cpp/code/274075/all-permutations-non-recursive
+			/// Final loop iteration unneeded, as element [0] only swaps with itself.
 			var divisor = 1;
          for (int city = _cities; city > 1; /* decrement in loop body */) {
             var dest		= (permutation / divisor) % city;
